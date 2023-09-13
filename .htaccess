@@ -1,0 +1,21 @@
+# https://httpd.apache.org/docs/2.4/mod/mod_rewrite.html
+# Ativar o módulo de reescrita
+RewriteEngine On
+
+# RewriteCond define uma condição para uma regra
+# Condição : Condição a ser aplicada ao nome do arquivo requisitado. Verifica se não existe um diretório fisicamente
+RewriteCond %{REQUEST_FILENAME} !-d
+# Condição : Condição a ser aplicada ao nome do arquivo requisitado. Verifica se não existe  um arquivo fisicamente
+RewriteCond %{REQUEST_FILENAME} !-f
+# Condição : Condição a ser aplicada ao nome do arquivo requisitado. Verifica se não existe um link simbólico
+RewriteCond %{REQUEST_FILENAME} !-l
+
+# RewriteRule : Faz a rescrita de URl
+# O circunflexo indica o ínicio e o cifrão indica o fim
+# (.+) pegar todo o conteúdo da URL
+# index.php?params=$1 indica para substituir a requisição, redirecionando o fluxo para index.php e passando-o como parâmetro completo
+# exemplo: index.php?url=blog/index
+# QSA significa que, se houver uma string de consulta passada com a URL original, ela será anexada à reescrita.
+# Exemplo: blog?situacao=1 será reescrita como index.php?url=blog$p=situacao.
+# O sinalizador [L] faz com que o mod_rewrite interrompa o processamento do conjunto de regras
+RewriteRule ^(.+)$ index.php?url=$1 [QSA,L]

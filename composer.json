@@ -13,5 +13,7 @@
             "email": "devsandrounity@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "ext-mysql_xdevapi": "*"
+    }
 }
