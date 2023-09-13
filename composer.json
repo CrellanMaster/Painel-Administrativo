@@ -1,0 +1,17 @@
+{
+    "name": "crellan/app",
+    "description": "Projeto painel administrativo básico",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Crellan\\App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Sandro",
+            "email": "devsandrounity@gmail.com"
+        }
+    ],
+    "require": {}
+}
