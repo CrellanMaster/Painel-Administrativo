@@ -2,11 +2,25 @@
 
 namespace Crellan\App\Helpers;
 
+use Crellan\App\Core\ConfigCore;
+
 class Response
 {
-
-    public static function redirectIfError($message)
+    public static function responseException($e)
     {
-        echo "<h1>$message</h1>";
+        if (ConfigCore::ENVIRONMENT == 'DEBUG') {
+            throw $e;
+        } else {
+            header('Location:' . $_SERVER['HTTP_HOST'], false, 500);
+        }
+    }
+
+    public static function responseNotFound($e)
+    {
+        if (ConfigCore::ENVIRONMENT == 'DEBUG') {
+            throw $e;
+        } else {
+            header('Location: /404');
+        }
     }
 }
