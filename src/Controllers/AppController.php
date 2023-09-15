@@ -16,13 +16,12 @@ class AppController
         var_dump($_SERVER);
     }
 
-    public function blog()
+    public function blog($array)
     {
-        var_dump($_SERVER);
+        var_dump($array);
     }
 
     public function about()
     {
-        var_dump($_SERVER);
     }
 }

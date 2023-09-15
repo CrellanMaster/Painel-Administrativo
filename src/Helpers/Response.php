@@ -20,7 +20,7 @@ class Response
         if (ConfigCore::ENVIRONMENT == 'DEBUG') {
             throw $e;
         } else {
-            header('Location: /404');
+            header('Location: /404', '', 404);
         }
     }
 }

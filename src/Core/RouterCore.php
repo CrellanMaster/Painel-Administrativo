@@ -52,51 +52,82 @@ class RouterCore
     public function route($path, $action, $name)
     {
         $action = array_filter(explode('@', $action));
-
-        $this->routes[$path] =
+        $matchess = preg_match_all('/[{][a-z-]+[}]/', $path, $matches);
+        $this->routes[trim($path, '/')] =
             [
                 'name' => $name,
                 'controller' => $action[0],
                 'method' => $action[1],
                 'verb' => $this->verb,
-                'path' => explode('/', $path)
+                'path' => explode('/', trim($path, '/')),
+                'isQuery' => $matchess > 0,
+                'params' => $matches[0]
             ];
+    }
+
+    private function matchRoute($arrayUrl): array
+    {
+        $routeResult = [];
+
+        foreach ($_SERVER['ROUTES'] as $route => $routeBody) {
+            if (sizeof($arrayUrl) == sizeof($routeBody['path'])) {
+                $routeMatched = true;
+                for ($i = 0; $i < sizeof($arrayUrl); $i++) {
+                    $param = '';
+                    if (preg_match_all('/[{][a-z-]*[}]/', $routeBody['path'][$i], $param)) {
+                        $routeBody['path'][$i] = $arrayUrl[$i];
+                        var_dump($routeBody['params']);
+                        foreach ($routeBody['params'] as $key => $item) {
+                            var_dump($key . ' ' . $item);
+                            if ($item == $param[0][0]) {
+                                $routeBody['params'][$key] = $arrayUrl[$i];
+                                break;
+                            }
+                        }
+                    }
+                    if ($arrayUrl[$i] != $routeBody['path'][$i]) {
+                        $routeMatched = false;
+                        break;
+                    }
+                }
+                if ($routeMatched) {
+                    $routeResult = $routeBody;
+                    break;
+                }
+            }
+        }
+
+        return $routeResult;
     }
 
     /**
      * @throws Exception
      */
-    public function dispatch()
+    public
+    function dispatch()
     {
         $_SERVER['ROUTES'] = $this->routes;
         $url = trim(filter_input(INPUT_GET, 'url', FILTER_DEFAULT), '/');
-        $url = '/' . $url;
+        $arrayUrl = explode('/', trim($url, '/'));
 
-        $routeData = [];
-        foreach ($_SERVER['ROUTES'] as $route => $routeBody) {
-            if ($url == $route) {
-                $routeData = $routeBody;
-                break;
-            }
-        }
+        $routeData = $this->matchRoute($arrayUrl);
+
 
         if (empty($routeData)) {
-            header('HTTP/1.1 404 NOT FOUND');
             Response::responseNotFound(throw new Exception('Rota não encontrada'));
         }
-
-        var_dump($routeData);
 
         if ($_SERVER['REQUEST_METHOD'] != $routeData['verb']) {
             Response::responseException(throw new Exception('Verbo não suportado nessa rota'));
         }
+        var_dump($routeData);
 
         $controller = "{$this->controllerPath}\\{$routeData['controller']}";
         if (class_exists($controller)) {
             $controller = new $controller();
             if (method_exists($controller, $routeData['method'])) {
                 $method = $routeData['method'];
-                $controller->$method();
+                $routeData['isQuery'] ? $controller->$method($routeData['params']) : $controller->$method();;
             } else {
                 Response::responseException(throw new Exception('Método não encontrado'));
             }
