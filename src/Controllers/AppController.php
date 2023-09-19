@@ -2,13 +2,17 @@
 
 namespace Crellan\App\Controllers;
 
+use Crellan\App\Models\UserModel;
+
 class AppController
 {
 
 
     public function home()
     {
-        var_dump($_SERVER);
+        $user = new UserModel();
+        $user->all();
+        var_dump($user);
     }
 
     public function contact()
