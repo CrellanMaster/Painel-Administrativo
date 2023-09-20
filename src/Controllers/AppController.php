@@ -11,8 +11,10 @@ class AppController
     public function home()
     {
         $user = new UserModel();
-        $user->all();
-        var_dump($user);
+        $users = $user->all(array('username', 'email'))
+            ->where('id', '>', 0)
+            ->get();
+        var_dump($users);
     }
 
     public function contact()

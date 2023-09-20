@@ -11,7 +11,7 @@ trait Connection
     public function connect(): string|PDO
     {
         try {
-            $conn = new PDO('mysql:' . ConfigCore::DB_HOST . ';dbname=' . ConfigCore::DB_NAME, ConfigCore::DB_USERNAME, ConfigCore::DB_PASSWORD);
+            $conn = new PDO('mysql:host=' . ConfigCore::DB_HOST . ';dbname=' . ConfigCore::DB_NAME, ConfigCore::DB_USERNAME, ConfigCore::DB_PASSWORD);
         } catch (PDOException $e) {
             return $e->getMessage();
         }
